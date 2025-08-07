@@ -1,0 +1,28 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t shmookhmohammed555/voting-app:$GITHUB_SHA -t shmookhmohammed555/voting-app:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push shmookhmohammed555/voting-app:$GITHUB_SHA
+          docker push shmookhmohammed555/voting-app:latest
